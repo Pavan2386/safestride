@@ -20,17 +20,19 @@ jobs:
           sudo apt update
           sudo apt install -y git zip unzip autoconf libtool pkg-config libffi-dev libssl-dev wget
 
-      - name: Install Android SDK command line tools
+      - name: Install Android SDK
         run: |
           mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O /tmp/cmdtools.zip
           unzip /tmp/cmdtools.zip -d /tmp/cmdtools
           mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest
           mv /tmp/cmdtools/cmdline-tools/* ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/
+          mkdir -p ~/.buildozer/android/platform/android-sdk/tools/bin
+          ln -sf ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager ~/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
+          ln -sf ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/avdmanager ~/.buildozer/android/platform/android-sdk/tools/bin/avdmanager
 
       - name: Accept Android licenses
         run: |
-          export JAVA_HOME=$JAVA_HOME_17_X64
           yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
           yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.2" "platforms;android-33" "platform-tools"
 
@@ -39,7 +41,6 @@ jobs:
 
       - name: Build APK
         run: |
-          export JAVA_HOME=$JAVA_HOME_17_X64
           export ANDROIDSDK=~/.buildozer/android/platform/android-sdk
           buildozer android debug
 
