@@ -15,10 +15,15 @@ jobs:
           sudo apt update
           sudo apt install -y git zip unzip autoconf libtool pkg-config libffi-dev libssl-dev
 
-      - name: Accept Android licenses
+      - name: Setup Android SDK for buildozer
         run: |
+          mkdir -p ~/.buildozer/android/platform
+          ln -sf $ANDROID_HOME ~/.buildozer/android/platform/android-sdk
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.2" "platforms;android-33" || true
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.2" "platforms;android-33" "platform-tools" || true
+          mkdir -p $ANDROID_HOME/tools/bin
+          ln -sf $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager || true
+          ln -sf $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager $ANDROID_HOME/tools/bin/avdmanager || true
 
       - name: Install buildozer
         run: pip install buildozer cython
