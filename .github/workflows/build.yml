@@ -13,22 +13,28 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config libffi-dev libssl-dev
+          sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config libffi-dev libssl-dev wget
+
+      - name: Install Android SDK command line tools
+        run: |
+          mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O /tmp/cmdtools.zip
+          unzip /tmp/cmdtools.zip -d /tmp/cmdtools
+          mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest
+          mv /tmp/cmdtools/cmdline-tools/* ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/
+
+      - name: Accept Android licenses
+        run: |
+          yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+          yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.2" "platforms;android-33" "platform-tools"
 
       - name: Install buildozer
         run: pip install buildozer cython
 
-      - name: Accept Android SDK licenses
-        run: |
-          mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
-          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          echo "d975f751698a77b662f1254ddbeed3901e976f5a" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
-          echo "84831b9409646a918e30573bab4c9c91346d8abd" >> ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-
       - name: Build APK
         run: |
-          export ANDROIDAPI=33
-          yes | buildozer android debug
+          export ANDROIDSDK=~/.buildozer/android/platform/android-sdk
+          buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
