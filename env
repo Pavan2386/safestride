@@ -1,0 +1,6 @@
+# SafeStride environment configuration
+# Fill in your actual API keys below before running the app
+
+GEMINI_API_KEY=AIzaSyBDe5hT8ROTuJ1a040jnyhnnImqGd9gf80
+MAPS_API_KEY=AIzaSyArMrDn-ilOOOBr-73ae7ak-SnaPtgC438
+BACKEND_URL=http://localhost:8080
